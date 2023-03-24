@@ -1,11 +1,38 @@
+/**
+ *  Free and Open Source library for building Lua scripts, using Kotlin. (KotlinLua)
+ *  Copyright (C) 2023 defaultzon3
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Lesser General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2.1 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Lesser General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Lesser General Public
+ *  License along with this library; if not, write to the Free Software
+ *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
+ *  USA
+ */
+
 package luaCore
 
 import java.lang.NullPointerException
 
 /**
- * @param varName
- * @param value {String | Number | Boolean | Nothing}
+ * Usage: `val someVar = LocalVar(varName, value)`, where:
+ *      varName {String}: Name for variable, should match the following pattern: `[A-Za-z_][A-Za-z0-9_]+`
+ *      value {String|Int|Long|Boolean|Nothing(null)}: Value for variable, by default it's `NullPointerException` or `nil`.
+ * Functions:
+ *      fun read() : String;
+ *      fun change(value: Any) : LuaNode
+ * @param varName {String}
+ * @param value {String|Int|Long|Boolean|Nothing(null)}
  */
+
 class LocalVar(private val varName : String, value : Any = NullPointerException()) {
     private var accessToVar : Boolean = true
 
