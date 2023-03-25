@@ -40,7 +40,7 @@ import luaCore.LuaNode
  * @param function  {(List<Argument>) -> Unit)}
  */
 
-class LuaFunc(vararg arguments : Argument, function : (List<Argument>) -> Unit) {
+class LuaFunc(vararg arguments : Argument, function : (List<Argument>?) -> Unit) {
     private var accessToFunction : Boolean = true
 
     init {
@@ -53,7 +53,7 @@ class LuaFunc(vararg arguments : Argument, function : (List<Argument>) -> Unit) 
                 })"
             )
             arguments.forEach { it.insertNodeWithValue() }
-            function(arguments.toList())
+            function(if (arguments.isNotEmpty()) arguments.toList() else null)
             LuaNode("end")
 
             Data.currentItemNode++
@@ -70,10 +70,10 @@ class LuaFunc(vararg arguments : Argument, function : (List<Argument>) -> Unit) 
                 when (it!!::class.simpleName) {
                     "String" -> "[=[$it]=]"
                     "Long", "Int", "Boolean", "Float" -> it.toString()
-                    "Nothing" -> "nil"
+                    "NullPointerException" -> "nil"
                     else -> {
                         println("[ warning ]: Argument `$it` has unknown value-type.")
-                        println("[ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, Nothing(null).")
+                        println("[ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, NullPointerException.")
                         "nil"
                     }
                 }

@@ -42,29 +42,49 @@ class Argument(private var value : Any? = null) {
     private val itemName : String = "_" + Data.currentItemNode.toString(2)
 
     init {
-        if (Data.currentItemNode.toUInt() != 65535u) {
-            value = when (value!!::class.simpleName) {
-                "String" -> "[=[$value]=]"
-                "Long", "Int", "Boolean", "Float" -> value
-                "Nothing" -> "nil"
-                else -> {
-                    println("[ warning ]: Argument `$itemName` has unknown value-type.")
-                    println("[ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, Nothing(null).")
-                    accessToArgument = false
-                    "nil"
+        if (value != null) {
+            if (Data.currentItemNode.toUInt() != 65535u) {
+                value = when (value!!::class.simpleName) {
+                    "String" -> {
+                        if (value.toString() != "___TO_ARGUMENT:NULL___") {
+                            val toArgumentMatchResult: MatchResult? =
+                                Regex("___TO_ARGUMENT:(_[0-1]+)___").find(value.toString())
+                            if (toArgumentMatchResult != null) {
+                                toArgumentMatchResult.groupValues[1]
+                            } else {
+                                "[=[$value]=]"
+                            }
+                        } else {
+                            accessToArgument = false
+                        }
+                    }
+                    "Long", "Int", "Boolean", "Float", "Double" -> value
+                    else -> {
+                        println("[ warning ]: Argument `$itemName` has unknown value-type.")
+                        println("[ info ]: Acceptable value-types: String, Long, Int, Float, Double, Boolean, or just `null`.")
+                        accessToArgument = false
+                        "nil"
+                    }
                 }
+            } else {
+                accessToArgument = false
+                println("[ warning ]: Data.currentItemNode overflow. Max length: from 0u to 65535u")
             }
-
-            Data.currentItemNode++
-        } else {
-            accessToArgument = false
-            println("[ warning ]: Data.currentItemNode overflow. Max length: from 0u to 65535u")
         }
+
+        if (accessToArgument) Data.currentItemNode++
     }
 
     // Insert LuaNode with default value. Example: local {arg_name} = {arg_name} or {user_value}.
-    fun insertNodeWithValue() : LuaNode? =
-        if (accessToArgument) LuaNode("local $itemName = $itemName or $value") else null
+    fun insertNodeWithValue() : LuaNode? {
+        if (accessToArgument) {
+            if (value != null) {
+                LuaNode("local $itemName = $itemName or $value")
+            }
+        }
+
+        return null
+    }
 
     // Read argument value as String.
     fun readValue() : String? = if (accessToArgument) itemName else null
