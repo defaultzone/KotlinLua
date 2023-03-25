@@ -23,63 +23,61 @@ package luaCore
 import java.lang.NullPointerException
 
 /**
- * Usage: `val someVar = LocalVar(varName, value)`, where:
- *      varName {String}: Name for variable, should match the following pattern: `[A-Za-z_][A-Za-z0-9_]+`
+ * Usage: `val someVar = LocalVar(value)`, where:
  *      value {String|Int|Long|Boolean|Nothing(null)}: Value for variable, by default it's `NullPointerException` or `nil`.
+ * Variable name acts as unsigned 16 bit (limit: 0-65535).
+ *
  * Functions:
  *      fun read() : String;
  *      fun change(value: Any) : LuaNode
- * @param varName {String}
- * @param value {String|Int|Long|Boolean|Nothing(null)}
+ * @param value {String|Int|Long|Float|Boolean|Nothing(null)}
  */
 
-class LocalVar(private val varName : String, value : Any = NullPointerException()) {
+class LocalVar(private var value : Any = NullPointerException()) {
     private var accessToVar : Boolean = true
+    private val varName : String = "_" + Data.currentItemNode.toString(2)
 
     init {
-        if (varName.matches(Regex("[A-Za-z_][A-Za-z0-9_]+"))) {
-            if (varName !in Data.usedVariables) {
-                LuaNode(
-                    "local $varName = ${
-                        when (value::class.simpleName) {
-                            "String" -> "[=[$value]=]"
-                            "Long", "Int", "Boolean" -> value
-                            "Nothing" -> "nil"
-                            else -> {
-                                println("""
-                                   [ warning ]: Local variable "$varName" has unknown value: ${value::class.simpleName}.
-                                   [ info ]: Acceptable value of variable types: String, Long, Int, Boolean, Nothing(null).
-                                """.trimIndent())
-                                "nil"
-                            }
+        if (Data.currentItemNode.toUInt() != 65535u) {
+            LuaNode(
+                "local $varName = ${
+                    when (value::class.simpleName) {
+                        "String" -> "[=[$value]=]"
+                        "Long", "Int", "Boolean", "Float" -> value
+                        "Nothing" -> "nil"
+                        else -> {
+                            println("""
+                               [ warning ]: Local variable "$varName" has unknown value: ${value::class.simpleName}.
+                               [ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, Nothing(null).
+                            """.trimIndent())
+                            "nil"
                         }
-                    }"
-                )
-                Data.usedVariables[varName] = value
-            } else {
-                println("[ warning ]: Local variable $varName already registered.")
-                accessToVar = false
-            }
+                    }
+                }"
+            )
+
+            Data.currentItemNode++
         } else {
-            println("[ error ]: Unacceptable local variable name: $varName")
+            println("[ warning ]: Data.currentItemNode overflow. Max length: from 0u to 65535u")
             accessToVar = false
         }
     }
 
-    fun read() : String = if (accessToVar) varName else ""
+    fun read() : String? = if (accessToVar) varName else null
 
-    fun change(value: Any) : LuaNode {
+    fun change(newValue: Any) : LuaNode {
         if (accessToVar) {
+            value = newValue
             return LuaNode(
                 "$varName = " +
-                when (value::class.simpleName) {
-                    "String" -> "[=[$value]=]"
-                    "Long", "Int", "Boolean" -> value
+                when (newValue::class.simpleName) {
+                    "String" -> "[=[$newValue]=]"
+                    "Long", "Int", "Boolean", "Float" -> newValue
                     "Nothing" -> "nil"
                     else -> {
                         println("""
-                            [ warning ]: Cannot change variable value. Reason: unknown value-type(${value::class.simpleName})
-                            [ info ]: Acceptable value of variable types: String, Long, Int, Boolean, Nothing(null).
+                            [ warning ]: Cannot change variable value. Reason: unknown value-type(${newValue::class.simpleName})
+                            [ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, Nothing(null).
                         """.trimIndent())
                         "nil"
                     }

@@ -3,24 +3,25 @@ import luaCore.*
 /**
  * Registering local variables sample.
  *
- * Usage: `val someVar = LocalVar(varName, value)`, where:
- *      varName {String}: Name for variable, should match the following pattern: `[A-Za-z_][A-Za-z0-9_]+`
+ * Usage: `val someVar = LocalVar(value)`, where:
  *      value {String|Int|Long|Boolean|Nothing(null)}: Value for variable, by default it's `NullPointerException` or `nil`.
+ * Variable name acts as unsigned 16 bit (limit: 0-65535).
+ *
  * Functions:
  *      fun read() : String;
  *      fun change(value: Any) : LuaNode
  * In the example below, the result would be:
  *
- * local firstVar = [=[Hello, world!]=]
- * local secondVar = false
- * print(firstVar)
- * secondVar = true
- * print(secondVar)
+ * local _0 = [=[Hello, world!]=]
+ * local _1 = false
+ * print(_0)
+ * _1 = true
+ * print(_1)
  */
 
 fun main() {
-    val firstVar = LocalVar("firstVar", "Hello, world!")
-    val secondVar = LocalVar("secondVar", false)
+    val firstVar = LocalVar("Hello, world!")
+    val secondVar = LocalVar(false)
 
     LuaNode("print(${firstVar.read()})")
     secondVar.change(true)

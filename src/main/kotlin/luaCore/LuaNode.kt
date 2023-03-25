@@ -28,10 +28,10 @@ package luaCore
  * @param content {String}
  */
 
-class LuaNode(private val content : String) {
+class LuaNode(private val content : String?) {
     init {
-        if (content != "NULL_LUA_NODE") Data.fileContent += arrayOf(content)
+        if (content != "NULL_LUA_NODE") Data.fileContent += arrayOf(content!!)
     }
 
-    override fun toString() : String = content
+    override fun toString() : String = content!!
 }

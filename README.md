@@ -16,9 +16,10 @@ import luaCore.*
 ***
 **Implemented**
 - **Local variables:** [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/LocalVariables/Main.kt)
+- **Lua Functions, arguments:** [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/Functions/Main.kt)
 
 **In progress**
-- **Lua Functions, arguments**
+- **Lua table**
 *** 
 **This library is still under development, assistance is welcome.**
 _**KotlinLua Copyright (C) 2023 defaultzon3**_

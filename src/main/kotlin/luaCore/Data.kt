@@ -22,5 +22,8 @@ package luaCore
 
 object Data {
     var fileContent : Array<String> = emptyArray()
-    var usedVariables : MutableMap<String, Any> = mutableMapOf("" to "")
+
+    // Since the name of each Lua(in final script) variable/function/etc. acts as a binary code, we need to add +1 to this variable.
+    // Limits: from 0 to 65535 (cannot be negative, minus sign is not allowed in naming(s))
+    var currentItemNode : UShort = 0u
 }
