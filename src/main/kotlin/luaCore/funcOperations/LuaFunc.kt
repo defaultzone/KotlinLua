@@ -67,15 +67,18 @@ class LuaFunc(vararg arguments : Argument, function : (List<Argument>?) -> Unit)
         if (accessToFunction) {
             val functionNode: UInt = Data.currentItemNode.toUInt() - 1u
             return "_" + functionNode.toString(2) + "(" + arguments.joinToString {
-                when (it!!::class.simpleName) {
-                    "String" -> "[=[$it]=]"
-                    "Long", "Int", "Boolean", "Float" -> it.toString()
-                    "NullPointerException" -> "nil"
-                    else -> {
-                        println("[ warning ]: Argument `$it` has unknown value-type.")
-                        println("[ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, NullPointerException.")
-                        "nil"
+                if (it != null) {
+                    when (it::class.simpleName) {
+                        "String" -> "[=[$it]=]"
+                        "Long", "Int", "Boolean", "Float" -> it.toString()
+                        else -> {
+                            println("[ warning ]: Argument `$it` has unknown value-type.")
+                            println("[ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, NullPointerException.")
+                            "nil"
+                        }
                     }
+                } else {
+                    "nil"
                 }
             } + ")"
         }
