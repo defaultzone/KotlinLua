@@ -23,7 +23,7 @@ fun main() {
 }
 
 /**
- * Result will be next:
+ * Output:
  *
  * function _0(_1)
  * local _1 = _1 or [=[https://google.com]=]
