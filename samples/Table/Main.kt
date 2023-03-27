@@ -1,7 +1,7 @@
 import luaCore.*
 
 /**
- * Пример с таблицами в KotlinLua. Устройство класса следующее:
+ * An example with tables in KotlinLua. The device class is as follows:
  *
  * `class Table(private val yaml : String? = null, private val json : String? = null)`
  *
