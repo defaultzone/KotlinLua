@@ -15,7 +15,7 @@ fun main() {
 
     /**
      * To execute a function use `LuaFunc().execute()`.
-     * The argument(s) is {String|Int|Long|Float|Boolean|Nothing(null)}
+     * The argument(s) is {String|Long|Int|Boolean|Float|Double|Table|null}
      * There can be as many arguments as you specified in `LuaFunc(/* your arguments */)`.
      */
 

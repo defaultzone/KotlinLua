@@ -21,7 +21,6 @@
 package luaCore
 
 import luaCore.funcOperations.Argument
-import java.lang.NullPointerException
 
 /**
  * Usage: `val someVar = LocalVar(value)`, where:
@@ -32,7 +31,7 @@ import java.lang.NullPointerException
  *      fun read() : String;
  *      fun change(value: Any) : LuaNode
  *      fun toArgument() : Argument = if (accessToVar) Argument("___TO_ARGUMENT:${varName}___") else Argument("___TO_ARGUMENT:NULL___")
- * @param value {String|Int|Long|Float|Boolean|Nothing(null)}
+ * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
  */
 
 class LocalVar(private var value: Any? = null) {
@@ -44,9 +43,10 @@ class LocalVar(private var value: Any? = null) {
             if (value != null) {
                 LuaNode(
                     "local $varName = ${
-                        when (value!!::class.simpleName) {
-                            "String" -> "[=[$value]=]"
-                            "Long", "Int", "Boolean", "Float", "Double" -> value
+                        when (value) {
+                            is String -> "[=[$value]=]"
+                            is Long, is Int, is Boolean, is Float, is Double -> value
+                            is Table -> (value as Table).readAsLuaTable()
                             else -> {
                                 println("""
                                     [ warning ]: Local variable "$varName" has unknown value: ${value!!::class.simpleName}.
@@ -75,9 +75,10 @@ class LocalVar(private var value: Any? = null) {
         if (accessToVar) {
             value = newValue
             if (newValue != null) {
-                return LuaNode("$varName = " + when (newValue::class.simpleName) {
-                        "String" -> "[=[$newValue]=]"
-                        "Long", "Int", "Boolean", "Float", "Double" -> newValue
+                return LuaNode("$varName = " + when (newValue) {
+                        is String -> "[=[$newValue]=]"
+                        is Long, is Int, is Boolean, is Float, is Double -> newValue
+                        is Table -> newValue.readAsLuaTable()
                         else -> {
                             println("""
                                 [ warning ]: Cannot change variable value. Reason: unknown value-type(${newValue::class.simpleName})
