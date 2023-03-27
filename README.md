@@ -17,9 +17,10 @@ import luaCore.*
 **Implemented**
 - **Local variables:** [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/LocalVariables/Main.kt)
 - **Lua Functions, arguments:** [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/Functions/Main.kt)
+- **Lua tables**: [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/Table/Main.kt)
 
 **In progress**
-- **Lua table**
+- **While, for, repeat loops**
 *** 
 **This library is still under development, assistance is welcome.**
 _**KotlinLua Copyright (C) 2023 defaultzon3**_

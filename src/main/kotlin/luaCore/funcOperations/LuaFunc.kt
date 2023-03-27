@@ -22,6 +22,7 @@ package luaCore.funcOperations
 
 import luaCore.Data
 import luaCore.LuaNode
+import luaCore.Table
 
 /**
  * Lua function.
@@ -68,12 +69,13 @@ class LuaFunc(vararg arguments : Argument, function : (List<Argument>?) -> Unit)
             val functionNode: UInt = Data.currentItemNode.toUInt() - 1u
             return "_" + functionNode.toString(2) + "(" + arguments.joinToString {
                 if (it != null) {
-                    when (it::class.simpleName) {
-                        "String" -> "[=[$it]=]"
-                        "Long", "Int", "Boolean", "Float" -> it.toString()
+                    when (it) {
+                        is String -> "[=[$it]=]"
+                        is Long, is Int, is Boolean, is Float -> it.toString()
+                        is Table -> it.readAsLuaTable()!!
                         else -> {
                             println("[ warning ]: Argument `$it` has unknown value-type.")
-                            println("[ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, NullPointerException.")
+                            println("[ info ]: Acceptable value-types: String, Long, Int, Float, Boolean, or just `null`.")
                             "nil"
                         }
                     }

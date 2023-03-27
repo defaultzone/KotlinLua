@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "me.dzone"
-version = "1.0-SNAPSHOT"
+version = "0.1-PREVIEW"
 
 repositories {
     mavenCentral()
@@ -12,6 +12,10 @@ repositories {
 
 dependencies {
     testImplementation(kotlin("test"))
+
+    // For converting YAML/JSON to Lua table.
+    implementation("org.yaml:snakeyaml:2.0")
+    implementation("org.json:json:20230227")
 }
 
 tasks.test {

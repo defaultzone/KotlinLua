@@ -23,6 +23,7 @@ package luaCore.funcOperations
 
 import luaCore.Data
 import luaCore.LuaNode
+import luaCore.Table
 
 /**
  * Argument for functions.
@@ -34,7 +35,7 @@ import luaCore.LuaNode
  *      Read argument value as String, also can return `null`, if overflow(UShort) or unknown type.
  *          `fun readValue() : String? = if (accessToArgument) itemName else null`;
  * See `samples/Functions/Main.kt` for more information.
- * @param value {String|Int|Long|Float|Boolean|Nothing(null)}
+ * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
  */
 
 class Argument(private var value : Any? = null) {
@@ -44,11 +45,11 @@ class Argument(private var value : Any? = null) {
     init {
         if (value != null) {
             if (Data.currentItemNode.toUInt() != 65535u) {
-                value = when (value!!::class.simpleName) {
-                    "String" -> {
-                        if (value.toString() != "___TO_ARGUMENT:NULL___") {
+                value = when (value) {
+                    is String -> {
+                        if (value != "___TO_ARGUMENT:NULL___") {
                             val toArgumentMatchResult: MatchResult? =
-                                Regex("___TO_ARGUMENT:(_[0-1]+)___").find(value.toString())
+                                Regex("___TO_ARGUMENT:(_[0-1]+)___").find(value as String)
                             if (toArgumentMatchResult != null) {
                                 toArgumentMatchResult.groupValues[1]
                             } else {
@@ -58,7 +59,8 @@ class Argument(private var value : Any? = null) {
                             accessToArgument = false
                         }
                     }
-                    "Long", "Int", "Boolean", "Float", "Double" -> value
+                    is Long, is Int, is Boolean, is Float, is Double -> value
+                    is Table -> (value as Table).readAsLuaTable()
                     else -> {
                         println("[ warning ]: Argument `$itemName` has unknown value-type.")
                         println("[ info ]: Acceptable value-types: String, Long, Int, Float, Double, Boolean, or just `null`.")

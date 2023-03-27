@@ -4,7 +4,7 @@ import luaCore.*
  * Registering local variables sample.
  *
  * Usage: `val someVar = LocalVar(value)`, where:
- *      value {String|Int|Long|Boolean|Nothing(null)}: Value for variable, by default it's `NullPointerException` or `nil`.
+ *      value {String|Long|Int|Boolean|Float|Double|Table|null}: Value for variable, by default it's `NullPointerException` or `nil`.
  * Variable name acts as unsigned 16 bit (limit: 0-65535).
  *
  * Functions:
