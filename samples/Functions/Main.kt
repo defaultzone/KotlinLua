@@ -26,7 +26,7 @@ fun main() {
  * Result will be next:
  *
  * function _0(_1)
- * local _1 = _1 or "https://google.com"
+ * local _1 = _1 or [=[https://google.com]=]
  * print(_1)
  * end
  * _0([=[There can be local variable. ( use `LocalVar().readValue()` )]=])
