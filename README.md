@@ -21,6 +21,7 @@ import luaCore.*
 
 **In progress**
 - **While, for, repeat loops**
+- **Lua functions**
 *** 
 **This library is still under development, assistance is welcome.**
 _**KotlinLua Copyright (C) 2023 defaultzon3**_
