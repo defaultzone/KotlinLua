@@ -21,22 +21,6 @@
 package luaCore
 
 /**
- * Allows you to change the value of the table through a local variable.
- *
- * @param key {String}
- * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
- */
-
-fun LocalVar.tableChange(key : String, value : Any? = null) : LuaNode {
-    return LuaNode("${this.read()}[\"$key\"]=${when (value) {
-        is String -> "[=[$value]=]"
-        is Long, is Int, is Boolean, is Float, is Double -> value
-        is Table -> value.readAsLuaTable()
-        else -> "nil"
-    }}")
-}
-
-/**
  * Translates a string to a LuaNode.
  */
 

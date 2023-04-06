@@ -95,4 +95,49 @@ class LocalVar(private var value: Any? = null) {
 
         return LuaNode("NULL_LUA_NODE")
     }
+
+    fun readTableItem(key : Any) : String? {
+        if (value is Table && accessToVar) {
+            val safeKey : String = when (key) {
+                is String, is Int, is Long, is Boolean -> key.toString()
+                is Argument -> key.readValue()!!
+                else -> {
+                    println("[ warning ]: Cannot get value, value is ${value!!::class.simpleName}, or no access to variable.")
+                    "nil"
+                }
+            }
+
+            var result = ""
+            for (char in safeKey) {
+                result += when (char) {
+                    '[' -> "\"$char"
+                    ']' -> "\"$char"
+                    else -> "[\"$char\"]"
+                }
+            }
+
+            return "$varName$result"
+        } else {
+            println("[ warning ]: Cannot get value, value is ${key::class.simpleName}, or no access to variable.")
+        }
+
+
+        return null
+    }
+
+    /**
+     * Allows you to change the value of the table through a local variable.
+     *
+     * @param key {String}
+     * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
+     */
+
+    fun tableChange(key : String, value : Any? = null) : LuaNode {
+        return LuaNode("${this.read()}[\"$key\"]=${when (value) {
+            is String -> "[=[$value]=]"
+            is Long, is Int, is Boolean, is Float, is Double -> value
+            is Table -> value.readAsLuaTable()
+            else -> "nil"
+        }}")
+    }
 }
