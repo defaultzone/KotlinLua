@@ -28,11 +28,6 @@ import luaCore.LuaNode
 fun breakLoop() : LuaNode = LuaNode("break")
 
 /**
- * `break` in Lua as String.
- */
-fun breakLoopString() : String = "break"
-
-/**
  * Registering a Lua "while" loop. Accepts a string as a condition or `true/false`.
  *
  * @param condition {String|Boolean}

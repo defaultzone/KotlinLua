@@ -17,9 +17,12 @@ import luaCore.*
 **Implemented**
 - **Local variables:** [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/LocalVariables/Main.kt)
 - **Lua Functions, arguments:** [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/Functions/Main.kt)
+- **For, while loops**: _sample in progress_
+- **Lua table**: [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/Table/Main.kt)
 
 **In progress**
-- **Lua table**
+- **If, else, elseif** statements.
+- **Return** keyword in functions.
 *** 
 **This library is still under development, assistance is welcome.**
 _**KotlinLua Copyright (C) 2023 defaultzon3**_

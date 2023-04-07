@@ -28,15 +28,26 @@ import luaCore.funcOperations.Argument
  * Variable name acts as unsigned 16 bit (limit: 0-65535).
  *
  * Functions:
- *      fun read() : String;
- *      fun change(value: Any) : LuaNode
- *      fun toArgument() : Argument = if (accessToVar) Argument("___TO_ARGUMENT:${varName}___") else Argument("___TO_ARGUMENT:NULL___")
+ *      `fun read() : String;`
+ *
+ *      `fun change(value: Any) : LuaNode`
+ *
+ *      `fun toArgument() : Argument = if (accessToVar) Argument("___TO_ARGUMENT:${varName}___") else Argument("___TO_ARGUMENT:NULL___")`
  * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
  */
 
-class LocalVar(private var value: Any? = null) {
+class LocalVar(private var value : Any? = null) {
     private var accessToVar : Boolean = true
     private val varName : String = "_" + Data.currentItemNode.toString(2)
+
+    /**
+     * Get keys for a Lua table in a string.
+     *
+     * @param input {String}
+     * @return {List<String>}
+     */
+    private fun getKeys(input : String) : List<String> =
+        Regex("\\[[^\\[\\]]*]|\\w+").findAll(input).map { it.value.trim('[', ']') }.toList()
 
     init {
         if (Data.currentItemNode.toUInt() != 65535u) {
@@ -68,10 +79,26 @@ class LocalVar(private var value: Any? = null) {
         }
     }
 
+    /**
+     * Get name of variable as `_${{ bit name of variable }}` only if accessToVar. Otherwise, it will return `null`.
+     */
+
     fun read() : String? = if (accessToVar) varName else null
+
+    /**
+     * Convert variable to function argument.
+     * Returns `___TO_ARGUMENT:__{{ bit name of variable }}___` only if the variable is accessed.
+     * Otherwise, it will return `___TO_ARGUMENT:NULL___`.
+     */
     fun toArgument() : Argument = if (accessToVar) Argument("___TO_ARGUMENT:${varName}___") else Argument("___TO_ARGUMENT:NULL___")
 
-    fun change(newValue: Any?) : LuaNode {
+    /**
+     * Change the value of a variable.
+     *
+     * @param newValue {String|Long|Int|Boolean|Float|Double|null}
+     * @return {LuaNode}
+     */
+    fun change(newValue : Any?) : LuaNode {
         if (accessToVar) {
             value = newValue
             if (newValue != null) {
@@ -96,33 +123,41 @@ class LocalVar(private var value: Any? = null) {
         return LuaNode("NULL_LUA_NODE")
     }
 
-    fun readTableItem(key : Any) : String? {
-        if (value is Table && accessToVar) {
-            val safeKey : String = when (key) {
-                is String, is Int, is Long, is Boolean -> key.toString()
-                is Argument -> key.readValue()!!
-                else -> {
-                    println("[ warning ]: Cannot get value, value is ${value!!::class.simpleName}, or no access to variable.")
-                    "nil"
-                }
-            }
+    /**
+     * Read table value by key. Usage example:
+     *
+     * ```kotlin
+     * readTableItem("key[1][false]['key']")    // Will return `["key"][1][false]["key"]`.
+     * readTableItem("[key][1][false]['key']")  // Will return `["key"][1][false]["key"]`.
+     * ```
+     *
+     * @param key {String|Int|Float|Long|Boolean|*(will return "nil")}
+     * @return {String}
+     */
 
-            var result = ""
-            for (char in safeKey) {
-                result += when (char) {
-                    '[' -> "\"$char"
-                    ']' -> "\"$char"
-                    else -> "[\"$char\"]"
+    fun readTableItem(key : Any?) : String {
+        return when (key) {
+            is String -> {
+                var output = ""
+                getKeys(key).forEach {
+                    val tableItemMatchResult : MatchResult? = Regex("TABLE_ITEM(.*)").find(it)
+                    output += if (tableItemMatchResult == null) {
+                        if (it.matches(Regex("[0-9]+|true|false"))) {
+                            "[$it]"
+                        } else if (it.matches(Regex("[\"'`].*[\"'`]"))) {
+                            "[\"" + it.substring(1, it.length - 1) + "\"]"
+                        } else {
+                            "[\"$it\"]"
+                        }
+                    } else {
+                        "[${tableItemMatchResult.groupValues[1]}]"
+                    }
                 }
+                varName + output
             }
-
-            return "$varName$result"
-        } else {
-            println("[ warning ]: Cannot get value, value is ${key::class.simpleName}, or no access to variable.")
+            is Int, is Float, is Long, is Boolean -> "$varName[$key]"
+            else -> "nil"
         }
-
-
-        return null
     }
 
     /**
@@ -140,4 +175,14 @@ class LocalVar(private var value: Any? = null) {
             else -> "nil"
         }}")
     }
+
+    /**
+     * Get the length of the table row. Returns `#_{{ bit variable name }}`
+     */
+    fun length() : String = "#$varName"
+
+    /**
+     * Get type of `value` argument.
+     */
+    fun type() : String = value!!::class.simpleName!!
 }

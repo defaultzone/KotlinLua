@@ -89,5 +89,5 @@ class Argument(private var value : Any? = null) {
     }
 
     // Read argument value as String.
-    fun readValue() : String? = if (accessToArgument) itemName else null
+    fun readValue() : String = if (accessToArgument) itemName else "nil"
 }

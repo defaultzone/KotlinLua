@@ -21,7 +21,11 @@
 package luaCore
 
 /**
+ * Returns a string representation of the table item.
+ */
+fun String.tableItem() : String = "TABLE_ITEM$this"
+
+/**
  * Translates a string to a LuaNode.
  */
-
 fun String.toLuaNode() = LuaNode(this)

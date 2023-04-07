@@ -24,14 +24,22 @@ package luaCore
  * Adds a string to the array (which is then assembled into a file). Used to avoid problems with the String type.
  * Use "NULL_LUA_NODE" as content param to not add a line to the built file.
  * Functions:
- *      override fun toString() : String = content
+ *      override fun toString() : String = content ?: ""
  * @param content {String}
  */
 
 class LuaNode(private val content : String?) {
     init {
-        if (content != "NULL_LUA_NODE") Data.fileContent += arrayOf(content!!)
+        if (content != "NULL_LUA_NODE") {
+            Data.fileContent += arrayOf(content!!)
+        }
     }
 
-    override fun toString() : String = content!!
+    /**
+     * Converts `LuaNode` to `String`.
+     * @return {String}: content or `empty string`
+     */
+    override fun toString() : String {
+        return content ?: ""
+    }
 }
