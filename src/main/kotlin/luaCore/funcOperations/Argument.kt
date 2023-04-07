@@ -62,7 +62,7 @@ class Argument(private var value : Any? = null) {
                     is Long, is Int, is Boolean, is Float, is Double -> value
                     is Table -> (value as Table).readAsLuaTable()
                     else -> {
-                        println("[ warning ]: Argument `$itemName` has unknown value-type.")
+                        println("[ warning ]: Argument '$itemName' has unknown type of value.")
                         println("[ info ]: Acceptable value-types: String, Long, Int, Float, Double, Boolean, or just `null`.")
                         accessToArgument = false
                         "nil"
