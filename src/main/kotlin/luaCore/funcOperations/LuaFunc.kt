@@ -41,37 +41,32 @@ import luaCore.Table
  * @param function  {(List<Argument>) -> Unit)}
  */
 
-class LuaFunc(vararg arguments : Argument, function : (List<Argument>?) -> Unit) {
+class LuaFunc(vararg arguments : Argument, function : (List<Argument>) -> Unit) {
     private var accessToFunction : Boolean = true
+    private val varName : String = Data.currentItemNode.toString(2)
 
     init {
         if (Data.currentItemNode.toUInt() != 65535u) {
-            LuaNode(
-                "function _${Data.currentItemNode.toString(2)}(${
-                    arguments.joinToString(",") {
-                        it.readValue()!!
-                    }
-                })"
-            )
-            arguments.forEach { it.insertNodeWithValue() }
-            function(if (arguments.isNotEmpty()) arguments.toList() else null)
-            LuaNode("end")
-
             Data.currentItemNode++
+            LuaNode("function _$varName(${
+                arguments.joinToString(",") { it.read() }
+            })")
+            arguments.forEach { it.insertNodeWithValue() }
+            function(arguments.toList())
+            LuaNode("end")
         } else {
             accessToFunction = false
             println("[ warning ]: Data.currentItemNode overflow. Max length: from 0u to 65535u")
         }
     }
 
-    fun execute(vararg arguments : Any?) : String? {
+    fun execute(vararg arguments : Any?) : String {
         if (accessToFunction) {
-            val functionNode: UInt = Data.currentItemNode.toUInt() - 1u
-            return "_" + functionNode.toString(2) + "(" + arguments.joinToString {
+            return "_$varName(" + arguments.joinToString {
                 if (it != null) {
                     when (it) {
                         is String -> "[=[$it]=]"
-                        is Long, is Int, is Boolean, is Float -> it.toString()
+                        is Long, is Int, is Boolean, is Float, is Double -> it.toString()
                         is Table -> it.readAsLuaTable()!!
                         else -> {
                             println("[ warning ]: Argument `$it` has unknown value-type.")
@@ -85,6 +80,6 @@ class LuaFunc(vararg arguments : Argument, function : (List<Argument>?) -> Unit)
             } + ")"
         }
 
-        return null
+        return "NULL_LUA_NODE"
     }
 }

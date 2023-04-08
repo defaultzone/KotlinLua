@@ -23,6 +23,7 @@ package luaCore.loops
 import luaCore.Data
 import luaCore.LocalVar
 import luaCore.LuaNode
+import luaCore.funcOperations.Argument
 
 object ForLoop {
 
@@ -41,17 +42,18 @@ object ForLoop {
     /**
      * Get the name of the variable assigned to the table via `LocalVar`.
      *
-     * @param table {LocalVar}
+     * @param table {LocalVar|Argument}
      * @return {Pair<Boolean, String>}
      */
 
-    private fun getTableName(table : LocalVar) : Pair<Boolean, String> {
-        return when (table.type()) {
-            "Table" -> Pair(true, table.read()!!)
-            else    -> {
+    private fun getTableName(table : Any) : Pair<Boolean, String> {
+        return when (table) {
+            is Argument -> Pair(true, table.read())
+            is LocalVar -> Pair(true, table.read()!!)
+            else        -> {
                 println("""
                     [ warning ]: Unknown type of variable in argument (ForLoop) 'table'.
-                    [ info ]: Type is '${table.type()}', but should be 'Table'.
+                    [ info ]: Type is '${table::class.simpleName}', but should be 'Table'.
                 """.trimIndent())
                 Pair(false, "NULL")
             }
@@ -89,11 +91,11 @@ object ForLoop {
      *     execute_loop_content()
      * end
      * ```
-     * @param table {LocalVar}
+     * @param table {LocalVar|Argument}
      * @param loopContent {(key : String, value : String) -> Unit}
      */
 
-    fun pairs(table : LocalVar, loopContent : (key : String, value : String) -> Unit) {
+    fun pairs(table : Any, loopContent : (key : String, value : String) -> Unit) {
         val keyName : String = getVarName()
         val valueName : String = getVarName()
         val (accessToTable, tableName) = getTableName(table)
@@ -113,7 +115,7 @@ object ForLoop {
      *     execute_loop_content()
      * end
      * ```
-     * @param table {LocalVar}
+     * @param table {LocalVar|Argument}
      * @param loopContent {(key : String, value : String) -> Unit}
      */
 

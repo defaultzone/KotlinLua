@@ -22,6 +22,7 @@ package luaCore
 
 import org.json.JSONObject
 import org.yaml.snakeyaml.Yaml
+import java.io.StringReader
 
 /**
  * Translates **JSON** or **YAML** into a Lua table.
@@ -38,29 +39,54 @@ import org.yaml.snakeyaml.Yaml
 class Table(private val yaml : String? = null, private val json : String? = null) {
     private var accessToTable : Boolean = false
 
-    private fun yamlToLua(yamlString : String) : String {
-        val yaml = Yaml()
-        val obj : Any = yaml.load(yamlString)
-        return convertYamlToLuaTable(obj)
+    init {
+        accessToTable = when {
+            yaml != null && json == null -> true
+            yaml == null && json != null -> true
+            else -> {
+                println("[ warning ]: Cannot access to table. Make sure that YAML or JSON passed as an argument (there can only be one).")
+                false
+            }
+        }
     }
 
-    private fun convertYamlToLuaTable(obj : Any?) : String {
-        return when (obj) {
-            is Map<*, *> -> {
-                val sb = StringBuilder("{")
-                for ((key, value) in obj) sb.append("[\"$key\"]=${convertYamlToLuaTable(value)},")
-                sb.append("}")
-                sb.toString()
-            }
-            is List<*> -> {
-                val sb = StringBuilder("{")
-                for (i in obj.indices) sb.append("[${i+1}]=${convertYamlToLuaTable(obj[i])},")
-                sb.append("}")
-                sb.toString()
-            }
-            is String -> "[=[$obj]=]"
-            else -> obj.toString()
+
+    private fun convertYamlToLua(yaml: String): String {
+        val yamlObject = Yaml().load<Map<String, Any>>(yaml)
+        return convertMapToLuaTable(yamlObject).replace(",}", "}")
+    }
+
+    private fun convertMapToLuaTable(map : Map<*, *>) : String {
+        val luaTable = StringBuilder("{")
+        for (entry in map.entries) {
+            val key = entry.key
+            val value = entry.value
+            luaTable.append("[\"$key\"]=")
+            luaTable.append(convertValueToLua(value))
+            luaTable.append(",")
         }
+        luaTable.append("}")
+        return luaTable.toString()
+    }
+
+    private fun convertValueToLua(value : Any?) : String {
+        return when (value) {
+            is Map<*, *> -> convertMapToLuaTable(value)
+            is List<*> -> convertListToLuaTable(value)
+            is String -> "[=[$value]=]"
+            else -> value.toString()
+        }
+    }
+
+    private fun convertListToLuaTable(list : List<*>) : String {
+        val luaTable = StringBuilder("{")
+        list.forEachIndexed { index, value ->
+            luaTable.append("[$index]=")
+            luaTable.append(convertValueToLua(value))
+            luaTable.append(",")
+        }
+        luaTable.append("}")
+        return luaTable.toString()
     }
 
     private fun convertJsonToLua(json : String) : String {
@@ -82,7 +108,7 @@ class Table(private val yaml : String? = null, private val json : String? = null
             }
 
             if (keys.hasNext()) {
-                luaTable.append(", ")
+                luaTable.append(",")
             }
         }
 
@@ -91,20 +117,9 @@ class Table(private val yaml : String? = null, private val json : String? = null
         return luaTable.toString()
     }
 
-    init {
-        accessToTable = when {
-            yaml != null && json == null -> true
-            yaml == null && json != null -> true
-            else -> {
-                println("[ warning ]: Cannot access to table. Make sure that YAML or JSON passed as an argument (there can only be one).")
-                false
-            }
-        }
-    }
-
     fun readAsLuaTable() : String? {
         return when {
-            yaml != null && accessToTable -> yamlToLua(yaml)
+            yaml != null && accessToTable -> convertYamlToLua(yaml)
             json != null && accessToTable -> convertJsonToLua(json)
 
             else -> null

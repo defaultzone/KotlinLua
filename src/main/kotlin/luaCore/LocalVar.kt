@@ -24,7 +24,7 @@ import luaCore.funcOperations.Argument
 
 /**
  * Usage: `val someVar = LocalVar(value)`, where:
- *      value {String|Int|Long|Boolean|Nothing(null)}: Value for variable, by default it's `NullPointerException` or `nil`.
+ *      value {String|Int|Long|Boolean|Nothing(null)}: Value for variable, by default it's `nil`.
  * Variable name acts as unsigned 16 bit (limit: 0-65535).
  *
  * Functions:
@@ -55,16 +55,16 @@ class LocalVar(private var value : Any? = null) {
                 LuaNode(
                     "local $varName = ${
                         when (value) {
-                            is String -> "[=[$value]=]"
+                            is String -> {
+                                if ((value as String).matches(Regex("_[0-1]+\\(.*?\\)$"))) {
+                                    value
+                                } else {
+                                    "[=[$value]=]"
+                                }
+                            }
                             is Long, is Int, is Boolean, is Float, is Double -> value
                             is Table -> (value as Table).readAsLuaTable()
-                            else -> {
-                                println("""
-                                    [ warning ]: Local variable "$varName" has unknown value: ${value!!::class.simpleName}.
-                                    [ info ]: Acceptable value-types: String, Long, Int, Float, Double, Boolean, or just `null`.
-                                """.trimIndent())
-                                "nil"
-                            }
+                            else -> throw IllegalArgumentException("Illegal value type: ${value!!.javaClass}")
                         }
                     }"
                 )

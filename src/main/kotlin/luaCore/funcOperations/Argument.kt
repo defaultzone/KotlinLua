@@ -22,6 +22,7 @@
 package luaCore.funcOperations
 
 import luaCore.Data
+import luaCore.LocalVar
 import luaCore.LuaNode
 import luaCore.Table
 
@@ -79,15 +80,37 @@ class Argument(private var value : Any? = null) {
 
     // Insert LuaNode with default value. Example: local {arg_name} = {arg_name} or {user_value}.
     fun insertNodeWithValue() : LuaNode? {
-        if (accessToArgument) {
-            if (value != null) {
-                LuaNode("local $itemName = $itemName or $value")
-            }
+        if (accessToArgument && value != null) {
+            LuaNode("local $itemName = $itemName or $value")
         }
 
         return null
     }
 
+    /**
+     * Swap value node with value as passed by `newValue`, but only if was used `insertNodeWithValue()`.
+     * @param newValue {String|LocalVar|Argument|Table|Int|Float|Long|Boolean|null}
+     * @return {LuaNode}
+     */
+    fun change(newValue : Any?) : LuaNode {
+        if (accessToArgument && value != null) {
+            if (newValue != null) {
+                LuaNode("$itemName = ${when (newValue) {
+                    is String -> "[=[$newValue]=]"
+                    is LocalVar -> newValue.read()
+                    is Argument -> newValue.read()
+                    is Table -> newValue.readAsLuaTable()
+                    is Int, is Float, is Long, is Boolean, is Double -> newValue.toString()
+                    else -> throw IllegalArgumentException("Illegal value type: ${newValue.javaClass}")
+                }}")
+            } else {
+                LuaNode("$itemName = nil")
+            }
+        }
+
+        return LuaNode("NULL_LUA_NODE")
+    }
+
     // Read argument value as String.
-    fun readValue() : String = if (accessToArgument) itemName else "nil"
+    fun read() : String = if (accessToArgument) itemName else "nil"
 }
