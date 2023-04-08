@@ -21,7 +21,7 @@ import luaCore.*
 - **Lua table**: [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/Table/Main.kt)
 
 **In progress**
-- **If, else, elseif** statements.
+- **If, else, elseif** statement.
 - **Return** keyword in functions.
 *** 
 **This library is still under development, assistance is welcome.**
