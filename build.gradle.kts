@@ -33,7 +33,7 @@ application {
 
 shadow {
     dependencies {
-        // To build .jar library that included all dependencies need to use execute gradlew with option "shadowJar".
+        // To build .jar library that included all dependencies need to execute gradlew with option "shadowJar".
         // That will create .jar library that have all dependencies by path $ROOT_PROJECT/build/libs/NAME_OF_LIBRARY.jar
         implementation("org.yaml:snakeyaml:2.0")
         implementation("org.json:json:20230227")
