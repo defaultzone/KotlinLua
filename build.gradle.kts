@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.8.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
     application
 }
 
@@ -28,4 +29,11 @@ kotlin {
 
 application {
     mainClass.set("MainKt")
+}
+
+shadow {
+    dependencies {
+        implementation("org.yaml:snakeyaml:2.0")
+        implementation("org.json:json:20230227")
+    }
 }
