@@ -1,4 +1,4 @@
-# KotlinLua 0.1-PREVIEW
+# Kotlin/Lua 0.1-PREVIEW
 **Free and Open Source** library for building Lua scripts using Kotlin. Licensed under terms of **GNU Lesser General Public License v2.1**.
 [**Learn more.**](https://github.com/defaultzon3/KotlinLua/blob/main/LICENSE)
 ***
@@ -10,8 +10,9 @@ dependencies {
 }
 ```
 **This will allow you to use the library in your project, and to include it in a file, use the following:**
+
 ```java
-import luaCore.*
+import lua.*
 ```
 ***
 **Implemented**

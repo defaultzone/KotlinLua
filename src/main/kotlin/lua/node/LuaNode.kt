@@ -18,14 +18,26 @@
  *  USA
  */
 
-package luaCore
+package lua.node
 
 /**
- * Returns a string representation of the table item.
+ * Adds a string to the array (which is then assembled into a file). Used to avoid problems with the String type.
+ * Use "NULL_LUA_NODE" as content param to not add a line to the built file.
+ * Functions:
+ *      override fun toString() : String = content ?: ""
+ * @param content {String}
  */
-fun String.tableItem() : String = "TABLE_ITEM$this"
 
-/**
- * Translates a string to a LuaNode.
- */
-fun String.toLuaNode() = LuaNode(this)
+class LuaNode(private val content : String?) {
+    init {
+        if (content != "NULL_LUA_NODE") {
+            Data.fileContent += arrayOf(content!!)
+        }
+    }
+
+    /**
+     * Converts `LuaNode` to `String`.
+     * @return {String}: content or `empty string`
+     */
+    override fun toString() : String = content ?: ""
+}

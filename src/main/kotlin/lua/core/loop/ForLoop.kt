@@ -18,12 +18,12 @@
  *  USA
  */
 
-package luaCore.loops
+package lua.core.loop
 
-import luaCore.Data
-import luaCore.LocalVar
-import luaCore.LuaNode
-import luaCore.funcOperations.Argument
+import lua.node.Data
+import lua.core.Local
+import lua.node.LuaNode
+import lua.core.function.Argument
 
 object ForLoop {
 
@@ -49,7 +49,7 @@ object ForLoop {
     private fun getTableName(table : Any) : Pair<Boolean, String> {
         return when (table) {
             is Argument -> Pair(true, table.read())
-            is LocalVar -> Pair(true, table.read()!!)
+            is Local -> Pair(true, table.read()!!)
             else        -> {
                 println("""
                     [ warning ]: Unknown type of variable in argument (ForLoop) 'table'.
@@ -119,7 +119,7 @@ object ForLoop {
      * @param loopContent {(key : String, value : String) -> Unit}
      */
 
-    fun ipairs(table : LocalVar, loopContent : (indexName : String, value : String) -> Unit) {
+    fun ipairs(table : Local, loopContent : (indexName : String, value : String) -> Unit) {
         val indexName : String = getVarName()
         val valueName : String = getVarName()
         val (accessToTable, tableName) = getTableName(table)

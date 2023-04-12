@@ -18,12 +18,27 @@
  *  USA
  */
 
-package luaCore
+package lua.core.loop
 
-object Data {
-    var fileContent : Array<String> = emptyArray()
+import lua.node.LuaNode
 
-    // Since the name of each Lua(in final script) variable/function/etc. acts as a binary code, we need to add +1 to this variable.
-    // Limits: from 0 to 65535 (cannot be negative, minus sign is not allowed in naming(s))
-    var currentItemNode : UShort = 0u
+/**
+ * `break` in Lua as LuaNode.
+ */
+fun breakLoop() : LuaNode = LuaNode("break")
+
+/**
+ * Registering a Lua "while" loop. Accepts a string as a condition or `true/false`.
+ *
+ * @param condition {String|Boolean}
+ * @param loopContent {() -> Unit}
+ */
+fun whileLoop(condition : Any, loopContent : () -> Unit) {
+    LuaNode("while ${when (condition) {
+        is String   -> condition
+        is Boolean  -> condition.toString()
+        else        -> "nil"
+    }} do")
+    loopContent()
+    LuaNode("end")
 }

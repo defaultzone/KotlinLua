@@ -18,17 +18,19 @@
  *  USA
  */
 
-package luaCore
+package lua.core
 
-object LuaCond {
+import lua.node.LuaNode
+
+object Cond {
     private fun makeStatement(keyword : String, condition : String, conditionFunction : () -> Unit, useEndKeyword : Boolean) {
         val conditionOperators : Map<String, String> = mapOf(
-            "!="    to "~=",
-            "!=="   to "~=",
-            "==="   to "==",
-            "&&"    to "and",
-            "||"    to "or",
-            "!"     to "not"
+            "!="    to " ~= ",
+            "!=="   to " ~= ",
+            "==="   to " == ",
+            "&&"    to " and ",
+            "||"    to " or ",
+            "!"     to " not "
         )
 
         var replacedCondition = condition

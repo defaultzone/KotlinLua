@@ -18,26 +18,26 @@
  *  USA
  */
 
-package luaCore
+package lua.core
 
-import luaCore.funcOperations.Argument
+import lua.core.function.Argument
+import lua.core.function.CastFunction
+import lua.core.function.Function // Non-void function.
+import lua.core.function.Return
+import lua.node.Data
+import lua.node.LuaNode
 
 /**
+ * Register local variable and add this in `Data.fileContent`.
+ *
  * Usage: `val someVar = LocalVar(value)`, where:
  *      value {String|Int|Long|Boolean|Nothing(null)}: Value for variable, by default it's `nil`.
- * Variable name acts as unsigned 16 bit (limit: 0-65535).
- *
- * Functions:
- *      `fun read() : String;`
- *
- *      `fun change(value: Any) : LuaNode`
- *
- *      `fun toArgument() : Argument = if (accessToVar) Argument("___TO_ARGUMENT:${varName}___") else Argument("___TO_ARGUMENT:NULL___")`
  * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
  */
 
-class LocalVar(private var value : Any? = null) {
-    private var accessToVar : Boolean = true
+class Local(private var value : Any? = null) {
+    private var functionParams : Int = -1
+    private var variableNames : Array<String> = emptyArray() // Used when (value is Return).
     private val varName : String = "_" + Data.currentItemNode.toString(2)
 
     /**
@@ -50,32 +50,20 @@ class LocalVar(private var value : Any? = null) {
         Regex("\\[[^\\[\\]]*]|\\w+").findAll(input).map { it.value.trim('[', ']') }.toList()
 
     init {
-        if (Data.currentItemNode.toUInt() != 65535u) {
-            if (value != null) {
-                LuaNode(
-                    "local $varName = ${
-                        when (value) {
-                            is String -> {
-                                if ((value as String).matches(Regex("_[0-1]+\\(.*?\\)$"))) {
-                                    value
-                                } else {
-                                    "[=[$value]=]"
-                                }
-                            }
-                            is Long, is Int, is Boolean, is Float, is Double -> value
-                            is Table -> (value as Table).readAsLuaTable()
-                            else -> throw IllegalArgumentException("Illegal value type: ${value!!.javaClass}")
-                        }
-                    }"
-                )
-            } else {
-                LuaNode("local $varName = nil")
+        when (value) {
+            is CastFunction -> {
+                val invokedFunction : String = (value as CastFunction).toString()
+                value = (value as CastFunction).getReturnClass()
+                for (i in 1..(value as Return).getLengthOfParameters()) {
+                    variableNames += arrayOf("_" + Data.currentItemNode.toString(2))
+                    Data.currentItemNode++
+                }
+                LuaNode("local ${variableNames.joinToString(" , ")} = $invokedFunction")
             }
-
-            Data.currentItemNode++
-        } else {
-            println("[ warning ]: Data.currentItemNode overflow. Max length: from 0u to 65535u")
-            accessToVar = false
+            else -> {
+                LuaNode("local $varName = ${makeParam(value)}")
+                Data.currentItemNode++
+            }
         }
     }
 
@@ -83,14 +71,13 @@ class LocalVar(private var value : Any? = null) {
      * Get name of variable as `_${{ bit name of variable }}` only if accessToVar. Otherwise, it will return `null`.
      */
 
-    fun read() : String? = if (accessToVar) varName else null
+    fun read() : String = varName
 
     /**
      * Convert variable to function argument.
-     * Returns `___TO_ARGUMENT:__{{ bit name of variable }}___` only if the variable is accessed.
-     * Otherwise, it will return `___TO_ARGUMENT:NULL___`.
+     * Returns `___TO_ARGUMENT:__{{ bit name of variable }}___`.
      */
-    fun toArgument() : Argument = if (accessToVar) Argument("___TO_ARGUMENT:${varName}___") else Argument("___TO_ARGUMENT:NULL___")
+    fun toArgument() : Argument = Argument("___TO_ARGUMENT:${varName}___")
 
     /**
      * Change the value of a variable.
@@ -98,30 +85,8 @@ class LocalVar(private var value : Any? = null) {
      * @param newValue {String|Long|Int|Boolean|Float|Double|null}
      * @return {LuaNode}
      */
-    fun change(newValue : Any?) : LuaNode {
-        if (accessToVar) {
-            value = newValue
-            if (newValue != null) {
-                return LuaNode("$varName = " + when (newValue) {
-                        is String -> "[=[$newValue]=]"
-                        is Long, is Int, is Boolean, is Float, is Double -> newValue
-                        is Table -> newValue.readAsLuaTable()
-                        else -> {
-                            println("""
-                                [ warning ]: Cannot change variable value. Reason: unknown value-type(${newValue::class.simpleName})
-                                [ info ]: Acceptable value-types: String, Long, Int, Float, Double, Boolean, or just `null`.
-                            """.trimIndent())
-                            "nil"
-                        }
-                    }
-                )
-            } else {
-                return LuaNode("$varName = nil")
-            }
-        }
-
-        return LuaNode("NULL_LUA_NODE")
-    }
+    fun change(newValue : Any?) : LuaNode =
+        LuaNode("$varName = ${makeParam(newValue)}".takeIf { value != null } ?: "NULL_LUA_NODE")
 
     /**
      * Read table value by key. Usage example:
@@ -166,23 +131,26 @@ class LocalVar(private var value : Any? = null) {
      * @param key {String}
      * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
      */
-
-    fun tableChange(key : String, value : Any? = null) : LuaNode {
-        return LuaNode("${this.read()}[\"$key\"]=${when (value) {
-            is String -> "[=[$value]=]"
-            is Long, is Int, is Boolean, is Float, is Double -> value
-            is Table -> value.readAsLuaTable()
-            else -> "nil"
-        }}")
-    }
+    fun tableChange(key : String, value : Any? = null) : LuaNode =
+        LuaNode("${this.read()}[\"$key\"]=${makeParam(value)}")
 
     /**
      * Get the length of the table row. Returns `#_{{ bit variable name }}`
      */
-    fun length() : String = "#$varName"
+    fun length() : String = " #$varName "
 
     /**
      * Get type of `value` argument.
      */
     fun type() : String = value!!::class.simpleName!!
+    operator fun get(i : Int) : String = when (i) {
+        0 -> varName
+        in 1..variableNames.size -> {
+            if (value is Return)
+                variableNames[i]
+            else
+                throw IllegalAccessError("Can't get name using int i: $i")
+        }
+        else -> throw IllegalAccessError("Can't get name using int i: $i")
+    }
 }

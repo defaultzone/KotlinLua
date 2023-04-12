@@ -18,27 +18,16 @@
  *  USA
  */
 
-package luaCore.loops
+package lua.core
 
-import luaCore.LuaNode
-
-/**
- * `break` in Lua as LuaNode.
- */
-fun breakLoop() : LuaNode = LuaNode("break")
+import lua.node.LuaNode
 
 /**
- * Registering a Lua "while" loop. Accepts a string as a condition or `true/false`.
- *
- * @param condition {String|Boolean}
- * @param loopContent {() -> Unit}
+ * Returns a string representation of the table item.
  */
-fun registerWhileLoop(condition : Any, loopContent : () -> Unit) {
-    LuaNode("while ${when (condition) {
-        is String   -> condition
-        is Boolean  -> condition.toString()
-        else        -> "nil"
-    }} do")
-    loopContent()
-    LuaNode("end")
-}
+fun String.tableItem() : String = "TABLE_ITEM$this"
+
+/**
+ * Translates a string to a LuaNode.
+ */
+fun String.toLuaNode() = LuaNode(this)

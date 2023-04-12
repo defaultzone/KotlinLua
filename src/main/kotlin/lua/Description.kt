@@ -18,7 +18,7 @@
  *  USA
  */
 
-package luaCore
+package lua
 
 object Description {
     private const val LIBRARY_NAME : String = "Kotlin/Lua"
@@ -35,5 +35,6 @@ object Description {
         ---
         --- Version library $LIBRARY_NAME from $RELEASE_DATE: $LIBRARY_VERSION
         --- Please do not remove this post. This will help the further development of library $LIBRARY_NAME.
-    """.trimIndent() + "\n"
+        
+    """.trimIndent()
 }

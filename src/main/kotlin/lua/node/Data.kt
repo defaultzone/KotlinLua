@@ -18,21 +18,12 @@
  *  USA
  */
 
-package luaCore.funcOperations
+package lua.node
 
-import luaCore.LocalVar
-import luaCore.LuaNode
+object Data {
+    var fileContent : Array<String> = emptyArray()
 
-fun luaReturn(vararg elements : Any) : LuaNode {
-    var statement : String = "return "
-    for (item in elements) {
-        statement += when (item) {
-            is LocalVar -> item.read()
-            is Argument -> item.read()
-            is String   -> "[=[$item]=]"
-            is Int, is Float, is Long, is Boolean, is Double -> item.toString()
-            else -> throw IllegalArgumentException("Illegal value type: ${item.javaClass}")
-        }
-    }
-    return LuaNode(statement)
+    // Since the name of each Lua(in final script) variable/function/etc. acts as a binary code, we need to add +1 to this variable.
+    // Limits: from 0 to 65535 (cannot be negative, minus sign is not allowed in naming(s))
+    var currentItemNode : Long = 0
 }

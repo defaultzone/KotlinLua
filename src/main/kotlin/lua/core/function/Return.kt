@@ -18,28 +18,14 @@
  *  USA
  */
 
-package luaCore
+package lua.core.function
 
-/**
- * Adds a string to the array (which is then assembled into a file). Used to avoid problems with the String type.
- * Use "NULL_LUA_NODE" as content param to not add a line to the built file.
- * Functions:
- *      override fun toString() : String = content ?: ""
- * @param content {String}
- */
+import lua.core.makeParam
+import lua.node.LuaNode
 
-class LuaNode(private val content : String?) {
-    init {
-        if (content != "NULL_LUA_NODE") {
-            Data.fileContent += arrayOf(content!!)
-        }
-    }
+class Return(private vararg val params : Any?) {
+    init { LuaNode("return ${insert()}") }
 
-    /**
-     * Converts `LuaNode` to `String`.
-     * @return {String}: content or `empty string`
-     */
-    override fun toString() : String {
-        return content ?: ""
-    }
+    fun insert() : String = params.joinToString(" , ") { makeParam(it) }
+    fun getLengthOfParameters() : Int = params.size
 }

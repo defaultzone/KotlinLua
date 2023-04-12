@@ -18,11 +18,10 @@
  *  USA
  */
 
-package luaCore
+package lua.core
 
 import org.json.JSONObject
 import org.yaml.snakeyaml.Yaml
-import java.io.StringReader
 
 /**
  * Translates **JSON** or **YAML** into a Lua table.
