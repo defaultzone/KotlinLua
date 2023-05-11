@@ -22,8 +22,9 @@ package lua.node
 
 object Data {
     var fileContent : Array<String> = emptyArray()
+    var fileHeader : String = ""
 
     // Since the name of each Lua(in final script) variable/function/etc. acts as a binary code, we need to add +1 to this variable.
-    // Limits: from 0 to 65535 (cannot be negative, minus sign is not allowed in naming(s))
-    var currentItemNode : Long = 0
+    // Starts at one since zero is occupied by the table with optimized functions.
+    var currentItemNode : Long = 1
 }

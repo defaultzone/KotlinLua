@@ -33,8 +33,8 @@ object Description {
         ---
         ---     $REPOSITORY_URL
         ---
-        --- Version library $LIBRARY_NAME from $RELEASE_DATE: $LIBRARY_VERSION
-        --- Please do not remove this post. This will help the further development of library $LIBRARY_NAME.
+        --- Version from $RELEASE_DATE: $LIBRARY_VERSION
+        --- Please do not remove this post. This will help the further development of $LIBRARY_NAME library.
         
     """.trimIndent()
 }

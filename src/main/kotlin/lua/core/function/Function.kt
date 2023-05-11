@@ -22,8 +22,6 @@ package lua.core.function
 
 import lua.node.Data
 import lua.node.LuaNode
-import lua.core.Table
-import lua.core.makeParam
 
 /**
  * Lua function.
@@ -42,19 +40,27 @@ import lua.core.makeParam
  * @param function  {(List<Argument>) -> Unit)}
  */
 
-class Function(vararg arguments : Argument, function : (List<Argument>) -> Return) {
-    private val varName : String = Data.currentItemNode.toString(2)
-    private var returnedParams : Return? = null
+class Function<T>(vararg arguments : Argument, function : (List<Argument>) -> T) {
+    private var generic : T? = null
+    private val varName : String = "_" + Data.currentItemNode.toString(2)
 
     init {
         Data.currentItemNode++
-        LuaNode("function _$varName(${
-            arguments.joinToString(",") { it.read() }
-        })")
-        arguments.forEach { it.insertNodeWithValue() }
-        returnedParams = function(arguments.toList())
+        LuaNode("function $varName(${arguments.joinToString(" , ") { it.read() }})")
+        arguments.forEach { it.insertNodeWithValue() } // Parse function arguments, if value of Argument isn't null.
+        val lambda = function(arguments.toList())
+        generic = when (lambda) {
+            is Unit -> null
+            else -> lambda
+        }
         LuaNode("end")
     }
 
-    fun execute(vararg arguments : Any?) : CastFunction = CastFunction("_$varName(${arguments.joinToString { makeParam(it) }})", returnedParams!!)
+    fun execute(vararg arguments : Any?) : String =
+        "--[[${when (generic) {
+            null -> -1
+            else -> (generic as Return).getLengthOfParameters()
+        }}]]$varName(${arguments.joinToString(" , ")})"
+
+    fun getLambdaReturnClass() : T = generic!!
 }

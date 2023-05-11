@@ -40,7 +40,6 @@ import lua.core.makeParam
 
 class Argument(private var value : Any? = null) {
     private val itemName : String = "_" + Data.currentItemNode.toString(2)
-
     init {
         if (value != null) {
             value = when (value) {
@@ -61,7 +60,7 @@ class Argument(private var value : Any? = null) {
 
     // Insert LuaNode with default value. Example: local {arg_name} = {arg_name} or {user_value}.
     fun insertNodeWithValue() : LuaNode =
-        LuaNode("local $itemName = $itemName or ${makeParam(value)}".takeIf { value != null } ?: "NULL_LUA_NODE")
+        LuaNode("local $itemName = $itemName or $value".takeIf { value != null } ?: "NULL_LUA_NODE")
 
     /**
      * Swap value node with value as passed by `newValue`, but only if was used `insertNodeWithValue()`.

@@ -23,30 +23,10 @@ package lua.core
 import lua.node.LuaNode
 
 object Cond {
-    private fun makeStatement(keyword : String, condition : String, conditionFunction : () -> Unit, useEndKeyword : Boolean) {
-        val conditionOperators : Map<String, String> = mapOf(
-            "!="    to " ~= ",
-            "!=="   to " ~= ",
-            "==="   to " == ",
-            "&&"    to " and ",
-            "||"    to " or ",
-            "!"     to " not "
-        )
-
-        var replacedCondition = condition
-        for ((key, value) in conditionOperators) {
-            replacedCondition = replacedCondition.replace(key, value)
-        }
-
-        LuaNode("$keyword $replacedCondition then")
-        conditionFunction()
-        if (useEndKeyword) LuaNode("end")
-    }
-
     fun If(condition : String, useEndKeyword : Boolean = true, invoke : () -> Unit) =
-        makeStatement("if", condition, invoke, useEndKeyword)
+        makeStatement("if", "then", condition, invoke, useEndKeyword)
     fun ElseIf(condition : String, useEndKeyword : Boolean = false, invoke : () -> Unit) =
-        makeStatement("elseif", condition, invoke, useEndKeyword)
+        makeStatement("elseif", "then", condition, invoke, useEndKeyword)
     fun Else(useEndKeyword : Boolean = false, invoke : () -> Unit) {
         LuaNode("else")
         invoke()

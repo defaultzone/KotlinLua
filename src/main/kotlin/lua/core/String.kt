@@ -30,4 +30,4 @@ fun String.tableItem() : String = "TABLE_ITEM$this"
 /**
  * Translates a string to a LuaNode.
  */
-fun String.toLuaNode() = LuaNode(this)
+fun String.toLuaNode() : LuaNode = LuaNode(this)

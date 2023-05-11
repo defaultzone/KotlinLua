@@ -21,8 +21,6 @@
 package lua.core
 
 import lua.core.function.Argument
-import lua.core.function.CastFunction
-import lua.core.function.Function // Non-void function.
 import lua.core.function.Return
 import lua.node.Data
 import lua.node.LuaNode
@@ -36,7 +34,6 @@ import lua.node.LuaNode
  */
 
 class Local(private var value : Any? = null) {
-    private var functionParams : Int = -1
     private var variableNames : Array<String> = emptyArray() // Used when (value is Return).
     private val varName : String = "_" + Data.currentItemNode.toString(2)
 
@@ -51,14 +48,20 @@ class Local(private var value : Any? = null) {
 
     init {
         when (value) {
-            is CastFunction -> {
-                val invokedFunction : String = (value as CastFunction).toString()
-                value = (value as CastFunction).getReturnClass()
-                for (i in 1..(value as Return).getLengthOfParameters()) {
-                    variableNames += arrayOf("_" + Data.currentItemNode.toString(2))
+            is String -> {
+                val functionMatchResult : MatchResult? = Regex("^--\\[\\[(.+)]][a-zA-Z_][A-Za-z0-9_.]+\\(.*?\\)$").find((value as String))
+                if (functionMatchResult != null) {
+                    val functionReturnedLength : Int = functionMatchResult.groupValues[1].toInt().takeIf { it != -1 } ?: 1
+                    value = Return(Array(functionReturnedLength) { -1 }, useInitPart = { false })
+                    for (i in 1..functionReturnedLength) {
+                        variableNames += arrayOf("_" + Data.currentItemNode.toString(2))
+                        Data.currentItemNode++
+                    }
+                    LuaNode("local ${variableNames.joinToString(" , ")} = ${functionMatchResult.value}")
+                } else {
+                    LuaNode("local $varName = ${makeParam(value)}")
                     Data.currentItemNode++
                 }
-                LuaNode("local ${variableNames.joinToString(" , ")} = $invokedFunction")
             }
             else -> {
                 LuaNode("local $varName = ${makeParam(value)}")
@@ -131,8 +134,8 @@ class Local(private var value : Any? = null) {
      * @param key {String}
      * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
      */
-    fun tableChange(key : String, value : Any? = null) : LuaNode =
-        LuaNode("${this.read()}[\"$key\"]=${makeParam(value)}")
+    fun tableChange(key : Any, value : Any? = null) : LuaNode =
+        LuaNode("${this.read()}[ ${makeParam(key)} ]=${makeParam(value)}")
 
     /**
      * Get the length of the table row. Returns `#_{{ bit variable name }}`

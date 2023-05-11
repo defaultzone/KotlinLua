@@ -23,9 +23,12 @@ package lua.core.function
 import lua.core.makeParam
 import lua.node.LuaNode
 
-class Return(private vararg val params : Any?) {
-    init { LuaNode("return ${insert()}") }
+class Return(private vararg val params : Any?, useInitPart : () -> Boolean = { true }) {
+    init {
+        if (useInitPart()) {
+            LuaNode("return ${params.joinToString(" , ") { makeParam(it) }}")
+        }
+    }
 
-    fun insert() : String = params.joinToString(" , ") { makeParam(it) }
     fun getLengthOfParameters() : Int = params.size
 }

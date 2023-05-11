@@ -20,6 +20,7 @@
 
 package lua.core.loop
 
+import lua.core.makeStatement
 import lua.node.LuaNode
 
 /**
@@ -33,12 +34,9 @@ fun breakLoop() : LuaNode = LuaNode("break")
  * @param condition {String|Boolean}
  * @param loopContent {() -> Unit}
  */
-fun whileLoop(condition : Any, loopContent : () -> Unit) {
-    LuaNode("while ${when (condition) {
+fun whileLoop(condition : Any, loopContent : () -> Unit) =
+    makeStatement("while", "do", when (condition) {
         is String   -> condition
         is Boolean  -> condition.toString()
         else        -> "nil"
-    }} do")
-    loopContent()
-    LuaNode("end")
-}
+    }, loopContent, true)

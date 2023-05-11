@@ -20,6 +20,7 @@
 
 package lua.core
 
+import org.json.JSONArray
 import org.json.JSONObject
 import org.yaml.snakeyaml.Yaml
 
@@ -101,6 +102,9 @@ class Table(private val yaml : String? = null, private val json : String? = null
 
             when (value) {
                 is JSONObject -> luaTable.append(convertJsonToLua(value.toString()))
+                is JSONArray -> {
+                    luaTable.append("{${value.joinToString(",") { makeParam(it) }}}")
+                }
                 is String -> luaTable.append("[=[$value]=]")
                 is Int, Long, Float, Double -> luaTable.append(value)
                 else -> throw IllegalArgumentException("Unsupported value type: ${value.javaClass}")
