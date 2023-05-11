@@ -34,6 +34,7 @@ import org.yaml.snakeyaml.Yaml
  *
  * @param yaml {String|null}
  * @param json {String|null}
+ * @throws IllegalArgumentException when `yaml` == null && `json` == null or `yaml` != null && `json` != null
  */
 
 class Table(private val yaml : String? = null, private val json : String? = null) {
@@ -43,10 +44,7 @@ class Table(private val yaml : String? = null, private val json : String? = null
         accessToTable = when {
             yaml != null && json == null -> true
             yaml == null && json != null -> true
-            else -> {
-                println("[ warning ]: Cannot access to table. Make sure that YAML or JSON passed as an argument (there can only be one).")
-                false
-            }
+            else -> throw IllegalArgumentException("'yaml' or 'json' argument must be passed once.")
         }
     }
 
@@ -61,7 +59,7 @@ class Table(private val yaml : String? = null, private val json : String? = null
         for (entry in map.entries) {
             val key = entry.key
             val value = entry.value
-            luaTable.append("[\"$key\"]=")
+            luaTable.append("[ [=[$key]=] ]=")
             luaTable.append(convertValueToLua(value))
             luaTable.append(",")
         }
@@ -98,7 +96,7 @@ class Table(private val yaml : String? = null, private val json : String? = null
             val key = keys.next()
             val value = jsonObject.get(key)
 
-            luaTable.append("[\"$key\"]=")
+            luaTable.append("[ [=[$key]=] ]=")
 
             when (value) {
                 is JSONObject -> luaTable.append(convertJsonToLua(value.toString()))

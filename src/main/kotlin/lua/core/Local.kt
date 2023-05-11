@@ -129,15 +129,6 @@ class Local(private var value : Any? = null) {
     }
 
     /**
-     * Allows you to change the value of the table through a local variable.
-     *
-     * @param key {String}
-     * @param value {String|Long|Int|Boolean|Float|Double|Table|null}
-     */
-    fun tableChange(key : Any, value : Any? = null) : LuaNode =
-        LuaNode("${this.read()}[ ${makeParam(key)} ]=${makeParam(value)}")
-
-    /**
      * Get the length of the table row. Returns `#_{{ bit variable name }}`
      */
     fun length() : String = " #$varName "
@@ -146,6 +137,7 @@ class Local(private var value : Any? = null) {
      * Get type of `value` argument.
      */
     fun type() : String = value!!::class.simpleName!!
+
     operator fun get(i : Int) : String = when (i) {
         0 -> varName
         in 1..variableNames.size -> {
@@ -156,4 +148,7 @@ class Local(private var value : Any? = null) {
         }
         else -> throw IllegalAccessError("Can't get name using int i: $i")
     }
+
+    operator fun set(key : Any, value : Any) : LuaNode =
+        LuaNode("${this.read()}[ ${makeParam(key)} ]=${makeParam(value)}")
 }
