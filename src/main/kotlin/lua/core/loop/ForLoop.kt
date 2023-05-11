@@ -34,7 +34,7 @@ object ForLoop {
      */
 
     private fun getVarName() : String {
-        val name : String = "_" + Data.currentItemNode.toString(2)
+        val name : String = "_" + Data.currentItemNode.toString()
         Data.currentItemNode++
         return name
     }

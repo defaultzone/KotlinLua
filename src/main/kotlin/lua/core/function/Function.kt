@@ -42,7 +42,7 @@ import lua.node.LuaNode
 
 class Function<T>(vararg arguments : Argument, function : (List<Argument>) -> T) {
     private var generic : T? = null
-    private val varName : String = "_" + Data.currentItemNode.toString(2)
+    private val varName : String = "_" + Data.currentItemNode.toString()
 
     init {
         Data.currentItemNode++

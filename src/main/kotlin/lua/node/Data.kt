@@ -24,7 +24,7 @@ object Data {
     var fileContent : Array<String> = emptyArray()
     var fileHeader : String = ""
 
-    // Since the name of each Lua(in final script) variable/function/etc. acts as a binary code, we need to add +1 to this variable.
+    // Since the name of each Lua(in final script) variable/function/etc. acts as a `underline + number`, we need to add +1 to this variable, to register something.
     // Starts at one since zero is occupied by the table with optimized functions.
     var currentItemNode : Long = 1
 }

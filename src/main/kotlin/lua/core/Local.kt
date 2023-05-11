@@ -35,7 +35,7 @@ import lua.node.LuaNode
 
 class Local(private var value : Any? = null) {
     private var variableNames : Array<String> = emptyArray() // Used when (value is Return).
-    private val varName : String = "_" + Data.currentItemNode.toString(2)
+    private val varName : String = "_" + Data.currentItemNode.toString()
 
     /**
      * Get keys for a Lua table in a string.
@@ -54,7 +54,7 @@ class Local(private var value : Any? = null) {
                     val functionReturnedLength : Int = functionMatchResult.groupValues[1].toInt().takeIf { it != -1 } ?: 1
                     value = Return(Array(functionReturnedLength) { -1 }, useInitPart = { false })
                     for (i in 1..functionReturnedLength) {
-                        variableNames += arrayOf("_" + Data.currentItemNode.toString(2))
+                        variableNames += arrayOf("_" + Data.currentItemNode.toString())
                         Data.currentItemNode++
                     }
                     LuaNode("local ${variableNames.joinToString(" , ")} = ${functionMatchResult.value}")

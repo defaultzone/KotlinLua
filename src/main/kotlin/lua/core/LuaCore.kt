@@ -26,6 +26,7 @@ import lua.node.LuaNode
 private val ignoreCertainRegex : Array<Regex> = arrayOf(
     Regex("[a-zA-Z_][A-Za-z0-9_.]+\\(.*?\\)$"), // LUA.CORE.FUNCTION.FUNCTION
     Regex("_[0-1]+"),                           // LUA.CORE.LOCAL
+    Regex("--\\[\\[u]].*"),                     // LUA.CORE.UNSAFE
     Regex("--\\[\\[-1]]_[0-1+]\\(.*?\\)$")
 )
 

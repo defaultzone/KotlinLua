@@ -31,3 +31,5 @@ fun String.tableItem() : String = "TABLE_ITEM$this"
  * Translates a string to a LuaNode.
  */
 fun String.toLuaNode() : LuaNode = LuaNode(this)
+
+fun String.unsafe() : String = "--[[u]]$this"

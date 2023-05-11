@@ -12,11 +12,12 @@ repositories {
 }
 
 dependencies {
-    testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlin:kotlin-test:1.8.20-RC")
 
     // For converting YAML/JSON to Lua table.
     implementation("org.yaml:snakeyaml:2.0")
     implementation("org.json:json:20230227")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20-RC")
 }
 
 tasks.test {
@@ -25,6 +26,7 @@ tasks.test {
 
 kotlin {
     jvmToolchain(8)
+    jvmToolchain(11)
 }
 
 application {

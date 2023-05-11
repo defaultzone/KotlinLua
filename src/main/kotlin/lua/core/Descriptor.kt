@@ -29,26 +29,31 @@ data class DescriptorObject(
     val type : Int = Descriptor.FUNCTION,
     val requirePath : String = "INCLUDED",
     val optimize : Boolean = true,
+
+    // Should return a string, which will eventually be compiled into a file.
+    // It takes `params` (whatever is passed to `operator fun invoke(vararg params: Any?)`) as well as a name (if optimize == true, it will return _{{ number }}).
+    // If `make` is not passed (`null` value), then the string will be assembled as follows: `$name(${params.joinToString(",") { param -> makeParam(param)}})`
+    val make : ((params : Array<out Any?>, name : String?) -> String)? = null
 )
 
-class RegisteredDescriptor(private val key : String?, private val returnedParams : Int) {
-    operator fun invoke(vararg params : Any?) : String = "--[[${when {
+class RegisteredDescriptor(private val key : String?, private val returnedParams : Int, private val make : ((params : Array<out Any?>, name : String?) -> String)? = null) {
+    operator fun invoke(vararg params : Any?) : String = ("--[[${when {
             returnedParams <= 0 -> -1
             else -> returnedParams
         }}]]$key(${params.joinToString(" , ") { param -> makeParam(param) }})".takeIf {
             key != null
-        } ?: "NULL_LUA_NODE"
+        } ?: "NULL_LUA_NODE").takeIf { make == null } ?: make!!(params, key)
 }
 
-class Descriptor(private val invoke : (() -> Array<DescriptorObject>)? = null) {
+class Descriptor(private val lambda : (() -> Array<DescriptorObject>)? = null) {
     private var optimizedFunctions : MutableMap<Int, String> = mutableMapOf()
     private var currentTableKey : Int = 0
 
     private fun MutableMap<Int, String>.joinToString(
-        separator : String = ",", invoke : (key : Int, value : String) -> String
+        separator : String = ",", lambda : (key : Int, value : String) -> String
     ) : String {
         var output = ""
-        this.forEach { map -> output += invoke(map.key, map.value) + "," }
+        this.forEach { map -> output += lambda(map.key, map.value) + "," }
         return output.substring(0, output.length - separator.length) // Remove last `separator` in String.
     }
 
@@ -60,25 +65,26 @@ class Descriptor(private val invoke : (() -> Array<DescriptorObject>)? = null) {
     }
 
     init {
-        invoke!!().forEach {
+        lambda!!().forEach {
             if (it.optimize) optimizedFunctions[currentTableKey++] = it.value
         }
 
         Data.fileHeader = "local _0={${optimizedFunctions.joinToString { key, value ->
-            "_${key.toString(2)}=$value"
+            "_${key.toString()}=$value"
         }}}"
     }
 
     operator fun get(key : String) : RegisteredDescriptor {
-        invoke!!().forEach {
+        lambda!!().forEach {
             if (it.value == key)
                 return if (it.optimize)
                     RegisteredDescriptor(
-                        "_0._" + optimizedFunctions.getKeyByValue(key)!!.toString(2),
-                        it.returnedParams
+                        "_0._" + optimizedFunctions.getKeyByValue(key)!!.toString(),
+                        it.returnedParams,
+                        it.make
                     )
                 else
-                    RegisteredDescriptor(key, it.returnedParams)
+                    RegisteredDescriptor(key, it.returnedParams, it.make)
         }
         return RegisteredDescriptor(null, -1)
     }

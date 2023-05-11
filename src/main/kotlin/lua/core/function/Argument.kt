@@ -39,7 +39,7 @@ import lua.core.makeParam
  */
 
 class Argument(private var value : Any? = null) {
-    private val itemName : String = "_" + Data.currentItemNode.toString(2)
+    private val itemName : String = "_" + Data.currentItemNode.toString(0)
     init {
         if (value != null) {
             value = when (value) {
