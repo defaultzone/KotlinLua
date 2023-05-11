@@ -1,6 +1,7 @@
 # Kotlin/Lua 0.1-PREVIEW
-**Free and Open Source** library for building Lua scripts using Kotlin. Licensed under terms of **GNU Lesser General Public License v2.1**.
-[**Learn more.**](https://github.com/defaultzon3/KotlinLua/blob/main/LICENSE)
+**Free and Open Source** library for building Lua scripts using Kotlin.<br>
+Licensed under terms of **GNU Lesser General Public License v2.1**,
+[**learn more.**](https://github.com/defaultzon3/KotlinLua/blob/main/LICENSE)
 ***
 **To use** this library, add in your `build.gradle.kts` following:
 ```groovy
@@ -15,15 +16,5 @@ dependencies {
 import lua.*
 ```
 ***
-**Implemented**
-- **Local variables:** [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/LocalVariables/Main.kt)
-- **Lua Functions, arguments:** [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/Functions/Main.kt)
-- **For, while loops**: _sample in progress_
-- **Lua table**: [**see sample.**](https://github.com/defaultzon3/KotlinLua/blob/main/samples/Table/Main.kt)
-
-**In progress**
-- **If, else, elseif** statement.
-- **Return** keyword in functions.
-*** 
-**This library is still under development, assistance is welcome.**
-_**KotlinLua Copyright (C) 2023 defaultzon3**_
+**This library is still under development, assistance is welcome.**<br>
+Kotlin/Lua Copyright (C) 2023 defaultzone
