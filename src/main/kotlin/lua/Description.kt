@@ -24,7 +24,7 @@ object Description {
     private const val LIBRARY_NAME : String = "Kotlin/Lua"
     private const val LIBRARY_VERSION : String = "0.1-PREVIEW"
     private const val LIBRARY_LICENSE : String = "GNU Lesser GPL-2.1"
-    private const val REPOSITORY_URL : String = "https://github.com/defaultzon3/KotlinLua"
+    private const val REPOSITORY_URL : String = "https://github.com/defaultzone/KotlinLua"
     private const val RELEASE_DATE : String = "00.00.0000"
 
     val FILE_COMMENTARY : String = """
