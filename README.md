@@ -16,8 +16,8 @@ dependencies {
 ***
 
 ### Usage example
-> ###### To reduce the `String`s (and file weight respectively) in your code, we use naming something like `_$Data.currentItemNode`.<br>
-> ###### The maximum size of `Data.currentItemNode` is `Long`.
+> To reduce the `String`s (and file weight respectively) in your code, we use naming something like `_$Data.currentItemNode`.<br>
+> The maximum size of `Data.currentItemNode` is `Long`.
 
 #### Kotlin
 
@@ -64,8 +64,8 @@ fun main() {
 ```
 ### Lua
 
-> ###### The library **does not format the code** resulting from the concatenation of all `LuaNode`s,<br>
-> ###### since to read it with names like `_$int` already makes a problem (why - see above), so we **abandoned the formatting**. 
+> The library **does not format the code** resulting from the concatenation of all `LuaNode`s,<br>
+> since to read it with names like `_$int` already makes a problem (why - see above), so we **abandoned the formatting**. 
 
 ```lua
 local _0={_0=io.write}
