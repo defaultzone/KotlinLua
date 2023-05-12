@@ -1,10 +1,9 @@
-<center><b>Kotlin/Lua v0.1-PREVIEW</b></center>
+# Kotlin/Lua v0.1-PREVIEW
 
 **Free and Open Source** library for building Lua scripts using Kotlin.<br>
-Licensed under terms of **GNU Lesser General Public License v2.1**:
-[**learn more**](https://github.com/defaultzon3/KotlinLua/blob/main/LICENSE)
+Licensed under terms of **GNU Lesser General Public License v2.1:** [**learn more**](https://github.com/defaultzon3/KotlinLua/blob/main/LICENSE)
 ***
-<center><b>Library connection</b></center>
+### Library connection
 
 ```groovy
 // build.gradle.kts
@@ -17,10 +16,10 @@ dependencies {
 ***
 
 ### Usage example
-> To reduce the `String`s (and file weight respectively) in your code, we use naming something like `_$Data.currentItemNode`.<br>
-> The maximum size of `Data.currentItemNode` is `Long`.
+> ###### To reduce the `String`s (and file weight respectively) in your code, we use naming something like `_$Data.currentItemNode`.<br>
+> ###### The maximum size of `Data.currentItemNode` is `Long`.
 
-<center><b>Kotlin</b></center>
+#### Kotlin
 
 ```kotlin
 import lua.core.*
@@ -63,10 +62,10 @@ fun main() {
     }
 }
 ```
-<center><b>Lua</b></center>
+### Lua
 
-> The library **does not format the code** resulting from the concatenation of all `LuaNode`s,<br>
-> since to read it with names like `_$int` already makes a problem (why - see above), so we **abandoned the formatting**. 
+> ###### The library **does not format the code** resulting from the concatenation of all `LuaNode`s,<br>
+> ###### since to read it with names like `_$int` already makes a problem (why - see above), so we **abandoned the formatting**. 
 
 ```lua
 local _0={_0=io.write}
