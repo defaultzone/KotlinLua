@@ -49,7 +49,7 @@ class Local(private var value : Any? = null) {
     init {
         when (value) {
             is String -> {
-                val functionMatchResult : MatchResult? = Regex("^--\\[\\[(.+)]][a-zA-Z_][A-Za-z0-9_.]+\\(.*?\\)$").find((value as String))
+                val functionMatchResult : MatchResult? = Regex("^--\\[\\[([- 0-9]+)]][a-zA-Z_][A-Za-z0-9_.]+\\(.*?\\)$").find((value as String))
                 if (functionMatchResult != null) {
                     val functionReturnedLength : Int = functionMatchResult.groupValues[1].toInt().takeIf { it != -1 } ?: 1
                     value = Return(Array(functionReturnedLength) { -1 }, useInitPart = { false })
